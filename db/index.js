@@ -26,7 +26,7 @@ class DB {
     }
 
     // remove an employee with the given id
-    removeEmployee(emplyoeeId) {
+    removeEmployee(employeeId) {
         return this.connection.promise().query(
             'DELETE FROM employee WHERE id = ?',
             employeeId

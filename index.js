@@ -1,14 +1,15 @@
 const { prompt } = require("inquirer");
 const { updateEmployeeManager } = require("./db");
 const db = require('./db');
+const logo = require('asciiart-logo');
 require('console.table');
 
 init();
 
 function init() {
-    // const logoText = logo({ name: "Employee Manager "}).render();
+    const logoText = logo({ name: "Employee Manager "}).render();
 
-    // console.log(logoTest);
+    console.log(logoText);
 
     loadMainPrompts();
 }
@@ -109,64 +110,64 @@ function viewEmployeesByDepartment() {
     })
 }
 
-function viewEmployeesByManager() {
+// function viewEmployeesByManager() {
 
-};
+// };
 
-function addEmployee() {
+// function addEmployee() {
 
-};
+// };
 
-function removeEmployee() {
+// function removeEmployee() {
 
-};
+// };
 
-function updateEmployeeRole() {
+// function updateEmployeeRole() {
 
-};
+// };
 
-function updateEmployeeManager() {
+// function updateEmployeeManager() {
 
-};
+// };
 
-function viewRoles() {
+// function viewRoles() {
 
-};
+// };
 
-function addRole() {
+// function addRole() {
 
-};
+// };
 
-function removeRole() {
+// function removeRole() {
 
-};
+// };
 
-function viewDepartments() {
+// function viewDepartments() {
 
-};
+// };
 
-function addDepartment() {
-    prompt([
-        {
-            type: 'input',
-            name: 'Department',
-            message: 'What is the name of the new department?'
-        }
-    ]).then(({Department}) =>{
-        console.log(Department);
-    })
-};
+// function addDepartment() {
+//     prompt([
+//         {
+//             type: 'input',
+//             name: 'Department',
+//             message: 'What is the name of the new department?'
+//         }
+//     ]).then(({Department}) =>{
+//         console.log(Department);
+//     })
+// };
 
-function removeDepartment() {
+// function removeDepartment() {
 
-};
+// };
 
-function viewBudget() {
+// function viewBudget() {
 
-};
+// };
 
-function quit() {
+// function quit() {
 
-};
+// };
 
 // View all employees that belong to a department
