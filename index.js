@@ -7,7 +7,7 @@ require('console.table');
 init();
 
 function init() {
-    const logoText = logo({ name: "Employee Manager "}).render();
+    const logoText = logo({ name: "Team Tracker"}).render();
 
     console.log(logoText);
 
@@ -76,11 +76,12 @@ function loadMainPrompts() {
 // view all employees
 
 function viewEmployees() {
+    console.log("Viewing employees");
     db.findAllEmployees()
         .then(([rows]) => {
-            let employees = rows;
+            let employee = rows;
             console.log('\n');
-            console.table(employees);
+            console.table(employee);
         })
         .then(() => loadMainPrompts());
 }
@@ -105,14 +106,38 @@ function viewEmployeesByDepartment() {
             .then(res => db.findAllEmployeesByDepartment(res.departmentId))
             .then(([rows]) => {
                 let employees = rows;
-                // unfinished
+                console.log('\n');
+                console.table(employees)
             })
     })
+    .then(() => loadMainPrompts());
 }
 
-// function viewEmployeesByManager() {
-
-// };
+function viewEmployeesByManager() {
+    db.findAllPossibleManagers()
+    .then(([rows]) => {
+        let manager = rows;
+        const managerChoices = managers.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }));
+        prompt([
+            {
+                type: 'list',
+                name: 'managerId',
+                message: "Which manager's direct reports would you like to see?",
+                choices: managerChoices
+            }
+        ])
+            .then(res => db.findAllEmployeesByManager(res.managerId))
+            .then(([rows]) => {
+                let employees = rows;
+                console.log('\n');
+                console.table(employees)
+            })
+    })
+    .then(() => loadMainPrompts());
+};
 
 // function addEmployee() {
 
@@ -130,9 +155,9 @@ function viewEmployeesByDepartment() {
 
 // };
 
-// function viewRoles() {
+function viewRoles() {
 
-// };
+};
 
 // function addRole() {
 

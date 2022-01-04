@@ -1,4 +1,4 @@
-INSERT INTO department (name)
+INSERT INTO departments (name)
 VALUES
     ('Operations'),
     ('Communications'),
@@ -13,9 +13,9 @@ VALUES
     ('Director of HR', 80000, 4);
 
     
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES
-    ('Hilary', 'Purrington', 1, 1),
-    ('Sarah', 'Jones', 2, 2),
-    ('Max', 'Rico', 3, 3),
-    ('Becky', 'Brice', 4, 4);
+    ('Harry', 'Potter', 1, 1),
+    ('Ron', 'Weasley', 2, 2),
+    ('Hermione', 'Granger', 3, 3),
+    ('Draco', 'Malfoy', 4, 4);

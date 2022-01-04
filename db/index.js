@@ -8,7 +8,7 @@ class DB {
     // find all employees except the given employee id
     findAllEmployees() {
         return this.connection.promise().query(
-            'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, CONCAT(manager.id)'
+            'SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS departments, CONCAT(manager.id)'
         );
     }
 
