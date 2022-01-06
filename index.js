@@ -4,6 +4,8 @@ const db = require('./db');
 const logo = require('asciiart-logo');
 const { load } = require("dotenv");
 require('console.table');
+const connection = require('./db/connection');
+
 
 init();
 
@@ -140,7 +142,9 @@ function viewEmployeesByManager() {
     .then(() => loadMainPrompts());
 };
 
-function addEmployee() {
+async function addEmployee() {
+    var roleChoices = await db.roleQuery();
+    var managerChoices = await db.managerQuery();
     prompt([
         {
             type: 'input',
@@ -155,22 +159,22 @@ function addEmployee() {
         {
             type: 'list',
             name: 'roleId',
-            choices: await roleQuery(),
+            choices: roleChoices,
             message: "What is their role?"
         },
         {
             type: "list",
             name: "manager",
             message: "Please select the employee's manager: ",
-            choices: await managerQuery()
+            choices: managerChoices
         }
     ]).then( async answer => {
         console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.roleId + " with " + answer.manager + " as their manager.");
         const firstName = answer.firstName;
         const lastName = answer.lastName;
-        const roleId = await roleIdQuery(answer.role);
-        const managerId = answer.manager === "None" ? null : await managerIdQuery(answer.manager);
-        const query = connection.query("INSERT INTO employees SET",
+        const roleId = await db.roleIdQuery(answer.role);
+        const managerId = answer.manager === "None" ? null : await db.managerIdQuery(answer.manager);
+        const query = connection.query("INSERT INTO employees SET ?",
             {
                 first_name: firstName,
                 last_name: lastName,
@@ -269,16 +273,5 @@ function viewBudget() {
 
 // };
 
-roleQuery = () => {
-    return new Promise((resolve, reject) => {
-      const roleArr = [];
-      connection.query("SELECT * FROM roles", (err, res) => {
-        if (err) throw err;
-        res.forEach(roles => {
-          roleArr.push(roles.title);
-          return err ? reject(err) : resolve(roleArr);
-        });
-      });
-    });
-};
+
 
