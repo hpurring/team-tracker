@@ -58,7 +58,7 @@ function loadMainPrompts() {
                 viewDepartments();
                 break;
             case 'Add department':
-                addDepartment();
+                createDepartment();
                 break;
             case 'Remove department':
                 removeDepartment();
@@ -139,9 +139,27 @@ function viewEmployeesByManager() {
     .then(() => loadMainPrompts());
 };
 
-// function addEmployee() {
-
-// };
+function addEmployee() {
+    prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: "What is the employee's first name?"
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: "What is the employee's last name?"
+        },
+        {
+            type: 'input',
+            name: 'roleId',
+            message: "What is their role ID?"
+        }
+    ]).then(answer => {
+        console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.roleId);
+    });
+};
 
 // function removeEmployee() {
 
@@ -156,43 +174,76 @@ function viewEmployeesByManager() {
 // };
 
 function viewRoles() {
-
+    console.log("Viewing all roles");
+    db.findAllRoles()
+        .then(([rows]) => {
+            let roles = rows;
+            console.log('\n');
+            console.table(roles);
+        })
+        .then(() => loadMainPrompts());
 };
 
-// function addRole() {
-
-// };
+function addRole() {
+    prompt([
+        {
+            type: 'input',
+            name: 'roleName',
+            message: 'What is the name of the new role?'
+            // use options from roles table 
+        },
+    ]).then(answer => {
+        console.log("You've added " + answer.roleName);
+    });
+};
 
 // function removeRole() {
 
 // };
 
-// function viewDepartments() {
+function viewDepartments() {
+    console.log("Viewing all departments");
+    db.findAllDepartments()
+        .then(([rows]) => {
+            let departments = rows;
+            console.log('\n');
+            console.table(departments);
+        })
+        .then(() => loadMainPrompts());
 
-// };
+};
 
-// function addDepartment() {
-//     prompt([
-//         {
-//             type: 'input',
-//             name: 'Department',
-//             message: 'What is the name of the new department?'
-//         }
-//     ]).then(({Department}) =>{
-//         console.log(Department);
-//     })
-// };
+// create new dept
+function createDepartment() {
+    prompt([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'What is the name of the new department?'
+        },
+    ]).then(answer => {
+        console.log("You've added " + answer.departmentName);
+    });
+};
 
 // function removeDepartment() {
 
 // };
 
-// function viewBudget() {
+function viewBudget() {
+    console.log("Viewing budget");
+    db.viewDepartmentBudgets()
+        .then(([rows]) => {
+            let budget = rows;
+            console.log('\n');
+            console.table(budget);
+        })
+        .then(() => loadMainPrompts());
+};
 
-// };
+// View all employees that belong to a department
 
 // function quit() {
 
 // };
 
-// View all employees that belong to a department

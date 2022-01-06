@@ -1,21 +1,22 @@
 const connection = require('./connection');
 
+
 class DB {
     constructor(connection) {
         this.connection = connection;
     }
 
-    // find all employees except the given employee id
+    // find all employees 
     findAllEmployees() {
         return this.connection.promise().query(
-            'SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS departments, CONCAT(manager.id)'
+            'SELECT employees.id AS "Employee ID", first_name AS "First Name", last_name AS "Last Name", roles.title AS "Role", roles.salary AS "Salary", departments.name AS "Department", manager_id AS "Manager ID" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY employees.id'
         );
     }
 
     // find all employees except the given employee id
     findAllPossibleManagers(employeeId) {
         return this.connection.promise().query(
-            'SELECT id, first_name, last_name FROM employee WHERE id != ?',
+            'SELECT id, first_name, last_name FROM employees WHERE id != ?',
             employeeId
         );
     }
@@ -52,7 +53,7 @@ class DB {
     // find all roles
     findAllRoles() {
         return this.connection.promise().query(
-            'SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN deparmtnet on role.department_id = department.name',
+            'SELECT employees.role_id AS "Role ID", roles.title AS "Role Title", roles.salary AS "Salary", departments.name AS "Department" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY employees.id'
          );
     }
 
@@ -73,23 +74,40 @@ class DB {
     // view all departments
     findAllDepartments() {
         return this.connection.promise().query(
-            'SELECT department.id, department.name FROM department;'
+            'SELECT id, name FROM departments;'
         );
     }
     
     // view dept budgets
     viewDepartmentBudgets() {
         return this.connection.promise().query(
-            'SELECT department.id, department.name, SUM(role.salary) AS utilized_budget FROM employee LEFT JOIN role on employee.role_id = role.id'
+            'SELECT departments.name AS "Department", SUM(roles.salary) AS "Budget Per Dept" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY departments.name'
         );
     }
 
     // create new dept
-    createDepartment(department) {
-        return this.connection.promise().query(
-            'INSERT INTO department SET ?', department
-        );
-    }
+    createDepartment() {
+        prompt([
+            {
+                type: 'input',
+                name: 'departmentName',
+                message: 'What is the name of the new department?'
+            },
+        ]).then(answer => {
+            db.query('INSERT INTO department SET ?',  
+                { 
+                    name: answer.departmentName,
+                },
+            (err, res) => {
+                if (err) {
+                    res.status(400).json({ error: err.message });
+                } else {
+                    console.log(`${res.affectedRows} department has been added`);
+                    findAllDepartments();
+                }
+            });
+        });
+    };
 
     // remove a dept
     removeDepartment(departmentId) {
