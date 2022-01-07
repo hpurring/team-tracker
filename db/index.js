@@ -176,6 +176,27 @@ class DB {
         });
     };
 
+    departmentQuery() {
+        return new Promise((resolve, reject) => {
+            const deptArr = [];
+            connection.query('SELECT * FROM departments', (err, res) => {
+                if (err) throw err;
+                res.forEach(departments => {
+                    deptArr.push(departments.name);
+                    return err ? reject(err) : resolve(deptArr);
+                });
+            });
+        });
+    };
+
+    departmentIdQuery = dept => {
+        return new Promise((resolve, reject) => {
+          connection.query('SELECT * FROM departments WHERE name=?', [dept], async (err, res) => {
+            if (err) throw err;
+            return err ? reject(err) : resolve(res[0].id);
+          });
+        })
+    };
 };
 
 

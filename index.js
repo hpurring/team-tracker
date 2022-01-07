@@ -210,18 +210,42 @@ function viewRoles() {
         .then(() => loadMainPrompts());
 };
 
-function addRole() {
+async function addRole() {
+    var departmentChoices = await db.departmentQuery();
     prompt([
         {
             type: 'input',
-            name: 'roleName',
-            message: 'What is the name of the new role?'
-            // use options from roles table 
+            name: 'title',
+            message: "What is the title of the new role?"
         },
-    ]).then(answer => {
-        console.log("You've added " + answer.roleName);
+        {
+            type: 'input',
+            name: 'salary',
+            message: "What is the new role's salary?"
+        },
+        {
+            type: 'list',
+            name: 'department',
+            choices: departmentChoices,
+            message: "To which department does this role belong?"
+        }
+    ]).then( async answer => {
+        console.log("You've added " + answer.title + " with a salary of " + answer.salary + " to the " + answer.department + ".");
+        const title = answer.title;
+        const salary = answer.salary;
+        const departmentId = await db.departmentIdQuery(answer.department);
+        const query = connection.query("INSERT INTO roles SET ?",
+            {
+                title: title,
+                salary: salary,
+                department_id: departmentId
+            }, (err, res) => {
+                if (err) throw err;
+                loadMainPrompts();
+            });
     });
 };
+
 
 // function removeRole() {
 
