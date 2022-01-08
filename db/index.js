@@ -119,44 +119,81 @@ class DB {
     // find all employees in a given dept; join with roles to display employees' role titles
     findAllEmployeesByDepartment(departmentId) {
         return this.connection.promise().query(
-            'SELECT employees.id, employees.first_name, employees.last_name, roles.title FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on departments.id = roles.department.id',
+            'SELECT employees.id, employees.first_name, employees.last_name, roles.title FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on departments.id = roles.department_id',
             departmentId
         )
     }
 
-    // find all employees by manager and join with departments and roles to display titles and department names
-    findAllEmployeesByManager(managerId) {
-        return this.connection.promise().query(
-            'SELECT employees.id, employees.first_name, employees.last_name, departments.name AS department, roles.title FROM employees LEFT JOIN roles on departments.id = roles.department_id',
-            managerId
-        );
-    }
+    // // find all employees by manager and join with departments and roles to display titles and department names
+    // findAllEmployeesByManager(managerId) {
+    //     return this.connection.promise().query(
+    //         'SELECT employees.id, employees.first_name, employees.last_name, departments.name AS department, roles.title FROM employees LEFT JOIN roles on departments.id = roles.department_id',
+    //         managerId
+    //     );
+    // }
+
+    employeeQuery() {
+        return new Promise((resolve,reject) => {
+            const employeesArr = [];
+            connection.query('SELECT * FROM employees', (err, res) => {
+                if (err) throw err;
+                res.forEach(employees => {
+                    let employeeName = employees.first_name + ' ' + employees.last_name;
+                    employeesArr.push(employeeName);
+                    return err ? reject(err) : resolve(employeesArr);
+                })
+            })
+        })
+    };
+
+    employeeIdQuery() {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT employees.id FROM employees', (err, res) => {
+                if (err) throw err;
+                return err ? reject(err) : resolve(res[0].id);
+            });
+        });
+    };
 
     roleQuery() {
         return new Promise((resolve, reject) => {
-          const roleArr = [];
-          connection.query("SELECT * FROM roles", (err, res) => {
-            if (err) throw err;
-            res.forEach(roles => {
-              roleArr.push(roles.title);
-              return err ? reject(err) : resolve(roleArr);
+            const roleArr = [];
+            connection.query("SELECT * FROM roles", (err, res) => {
+                if (err) throw err;
+                res.forEach(roles => {
+                roleArr.push(roles.title);
+                return err ? reject(err) : resolve(roleArr);
+                });
             });
-          });
         });
     };
 
     managerQuery() {
         return new Promise((resolve, reject) => {
             const managerArr = ["None"];
-            connection.query('SELECT employees.id, CONCAT(employees.first_name, " ", employees.last_name) AS "Employee", roles.title FROM employees RIGHT JOIN roles ON employees.role_id = roles.id WHERE employees.id IN (1,2,3,4,5,6)', (err, res) => {
+            connection.query('SELECT employees.id, CONCAT(employees.first_name, " ", employees.last_name) AS employee, roles.title FROM employees RIGHT JOIN roles ON employees.role_id = roles.id WHERE employees.id IN (1,2,3,4,5,6)', (err, res) => {
               if (err) throw err;
               res.forEach(manager => {
-                managerArr.push(manager.title);
+                managerArr.push(manager.employee);
                 return err ? reject(err) : resolve(managerArr);
                 });
             });
         });
     };
+
+    currentManagerQuery() {
+        return new Promise((resolve, reject) => {
+            const managerArr = [];
+            connection.query('SELECT employees.id, CONCAT(employees.first_name, " ", employees.last_name) AS employee, roles.title FROM employees RIGHT JOIN roles ON employees.role_id = roles.id WHERE employees.id IN (1,2,3,4,5,6)', (err, res) => {
+                if (err) throw err;
+                res.forEach(manager => {
+                    managerArr.push(manager.employee);
+                    return err ? reject(err) : resolve(managerArr);
+                });
+            });
+        });
+    };
+
 
     roleIdQuery() {
         return new Promise((resolve, reject) => {

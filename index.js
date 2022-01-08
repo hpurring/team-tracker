@@ -1,5 +1,5 @@
 const { prompt } = require("inquirer");
-const { updateEmployeeManager } = require("./db");
+const { updateEmployeeManager, roleIdQuery, managerIdQuery } = require("./db");
 const db = require('./db');
 const logo = require('asciiart-logo');
 const { load } = require("dotenv");
@@ -89,58 +89,51 @@ function viewEmployees() {
         .then(() => loadMainPrompts());
 }
 
-function viewEmployeesByDepartment() {
-    db.findAllDepartments()
-    .then(([rows]) => {
-        let departments = rows;
-        const departmentChoices = departments.map(({ id, name }) => ({
-            name: name,
-            value: id
-        }));
+// async function viewEmployeesByDepartment() {
+//     const departmentChoices = await db.departmentQuery;
+//         prompt([
+//             {
+//                 type: 'list',
+//                 name: 'department',
+//                 message: "Which department's employees would you like to see?",
+//                 choices: departmentChoices
+//             }
+//         ])
+    
+// };
 
+async function viewEmployeesByManager() {
+    const managers = await db.currentManagerQuery;
         prompt([
             {
                 type: 'list',
-                name: 'departmentId',
-                message: "Which department's employees would you like to see?",
-                choices: departmentChoices
-            }
-        ])
-            .then(res => db.findAllEmployeesByDepartment(res.departmentId))
-            .then(([rows]) => {
-                let employees = rows;
-                console.log('\n');
-                console.table(employees)
-            })
-    })
-    .then(() => loadMainPrompts());
-}
-
-function viewEmployeesByManager() {
-    db.findAllPossibleManagers()
-    .then(([rows]) => {
-        let manager = rows;
-        const managerChoices = managers.map(({ id, name }) => ({
-            name: name,
-            value: id
-        }));
-        prompt([
-            {
-                type: 'list',
-                name: 'managerId',
+                name: 'managers',
                 message: "Which manager's direct reports would you like to see?",
-                choices: managerChoices
+                choices: managers
             }
         ])
-            .then(res => db.findAllEmployeesByManager(res.managerId))
-            .then(([rows]) => {
-                let employees = rows;
-                console.log('\n');
-                console.table(employees)
-            })
-    })
-    .then(() => loadMainPrompts());
-};
+        .then(async answer => {
+            const managerId = await db.managerIdQuery(answer.manager);
+            if (managerId === null) {
+                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS employees FROM employees WHERE manager_id is null", (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    loadMainPrompts();
+                })
+            } else {
+                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS employees FROM employees WHERE manager_id=?", [managerId], (err, res) => {
+                    if (err) throw err;
+                    if (res.length < 1) {
+                        console.log("No employees to show.")
+                        loadMainPrompts();
+                    } else {
+                        console.table(res);
+                        loadMainPrompts();
+                    }
+                })
+            }
+        });
+}
 
 async function addEmployee() {
     var roleChoices = await db.roleQuery();
@@ -191,9 +184,37 @@ async function addEmployee() {
 
 // };
 
-// function updateEmployeeRole() {
-
-// };
+async function updateEmployeeRole() {
+    var employeeChoices = await db.employeeQuery;
+    var roleChoices = await db.roleQuery;
+    prompt([
+        {
+            type: 'list',
+            name: 'employee',
+            choices: employeeChoices,
+            message: "Which employee would you like to update?"
+        },
+        {
+            type: 'list',
+            name: 'role',
+            choices: roleChoices,
+            message: "What is the updated employee's new role?"
+        }
+    ])
+    .then(async answer => {
+        console.log(answer.employee + "'s role has been updated to " + answer.role + '.');
+        const employeeId = await db.employeeIdQuery(answer.employee);
+        const newRoleId = await db.roleIdQuery(answer.role);
+        const query = connection.query('UPDATE employees SET ? WHERE id=?',
+            [{
+                role_id: newRoleId
+            },
+                employeeId], (err, res) => {
+                    if (err) throw err;
+                    loadMainPrompts();
+            });
+    });
+};
 
 // function updateEmployeeManager() {
 
@@ -272,7 +293,15 @@ function createDepartment() {
             message: 'What is the name of the new department?'
         },
     ]).then(answer => {
-        console.log("You've added " + answer.departmentName);
+        console.log("You've added " + answer.departmentName + ".");
+        const newDept = answer.departmentName;
+        const query = connection.query("INSERT INTO departments SET ?",
+            {
+                name: newDept
+            }, (err, res) => {
+                if (err) throw err;
+                loadMainPrompts();
+            })
     });
 };
 
