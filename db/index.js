@@ -53,9 +53,11 @@ class DB {
     // find all roles
     findAllRoles() {
         return this.connection.promise().query(
-            'SELECT employees.role_id AS "Role ID", roles.title AS "Role Title", roles.salary AS "Salary", departments.name AS "Department" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY employees.id'
+            'SELECT roles.id AS "Role ID", roles.title AS "Role Title", roles.salary AS "Salary", departments.name AS "Department" FROM roles LEFT JOIN departments on roles.department_id = departments.id GROUP BY roles.id'
          );
     }
+
+    // job title, role id, the department that role belongs to, and the salary for that role
 
     // create new role
     createRole(role) {
@@ -195,9 +197,9 @@ class DB {
     };
 
 
-    roleIdQuery() {
+    roleIdQuery = role => {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT roles.id FROM roles', (err, res) => {
+            connection.query('SELECT roles.id FROM roles WHERE title=?', [role], (err, res) => {
               if (err) throw err;
               return err ? reject(err) : resolve(res[0].id);
             });
@@ -206,10 +208,14 @@ class DB {
 
     managerIdQuery() {
         return new Promise((resolve, reject) => {
-          connection.query('SELECT employees.id, CONCAT(first_name, " ", last_name) AS "Employee" FROM employees WHERE employees.id IN (1,2,3,4,5,6)', (err, res) => {
-            if (err) throw err;
-            return err ? reject(err) : resolve(res[0].id);
-          });
+            const managerIdArr = [];
+            connection.query('SELECT employees.id AS id, CONCAT(first_name, " ", last_name) AS "Employee" FROM employees WHERE employees.manager_id=0', (err, res) => {
+                if (err) throw err;
+                res.forEach(manager => {
+                    managerIdArr.push(manager.id);
+                    return err ? reject(err) : resolve(managerIdArr);
+                });
+            });
         });
     };
 

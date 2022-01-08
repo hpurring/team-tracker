@@ -115,7 +115,7 @@ async function viewEmployeesByManager() {
         .then(async answer => {
             const managerId = await db.managerIdQuery(answer.manager);
             if (managerId === null) {
-                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS employees FROM employees WHERE manager_id is null", (err, res) => {
+                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employees' FROM employees WHERE manager_id is null", (err, res) => {
                     if (err) throw err;
                     console.table(res);
                     loadMainPrompts();
@@ -151,7 +151,7 @@ async function addEmployee() {
         },
         {
             type: 'list',
-            name: 'roleId',
+            name: 'role',
             choices: roleChoices,
             message: "What is their role?"
         },
@@ -160,12 +160,12 @@ async function addEmployee() {
             name: "manager",
             message: "Please select the employee's manager: ",
             choices: managerChoices
-        }
-    ]).then( async answer => {
-        console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.roleId + " with " + answer.manager + " as their manager.");
+        },
+    ]).then(async answer => {
         const firstName = answer.firstName;
         const lastName = answer.lastName;
         const roleId = await db.roleIdQuery(answer.role);
+        console.log(roleId);
         const managerId = answer.manager === "None" ? null : await db.managerIdQuery(answer.manager);
         const query = connection.query("INSERT INTO employees SET ?",
             {
@@ -175,6 +175,7 @@ async function addEmployee() {
                 manager_id: managerId
             }, (err, res) => {
                 if (err) throw err;
+                console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.roleId + " with " + answer.manager + " as their manager.");
                 loadMainPrompts();
             });
     });

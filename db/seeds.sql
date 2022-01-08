@@ -26,12 +26,12 @@ VALUES
     
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES
-    ('Harry', 'Potter', 1, 1),
-    ('Ron', 'Weasley', 2, 2),
-    ('Hermione', 'Granger', 3, 3),
-    ('Draco', 'Malfoy', 4, 4),
-    ('Lavender', 'Brown', 5, 5),
-    ('Seamus', 'Finnigan', 6, 6),
+    ('Harry', 'Potter', 1, 0),
+    ('Ron', 'Weasley', 2, 0),
+    ('Hermione', 'Granger', 3, 0),
+    ('Draco', 'Malfoy', 4, 0),
+    ('Lavender', 'Brown', 5, 0),
+    ('Seamus', 'Finnigan', 6, 0),
     ('Parvati', 'Patil', 7, 1),
     ('Susan', 'Bones', 8, 2),
     ('Millicent', 'Bulstrode', 9, 3),
