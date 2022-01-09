@@ -11,28 +11,28 @@ class DB {
         return this.connection.promise().query(
             'SELECT employees.id AS "Employee ID", first_name AS "First Name", last_name AS "Last Name", roles.title AS "Role", roles.salary AS "Salary", departments.name AS "Department", manager_id AS "Manager ID" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY employees.id'
         );
-    }
+    };
 
     // find all roles
     findAllRoles() {
         return this.connection.promise().query(
             'SELECT roles.id AS "Role ID", roles.title AS "Role Title", roles.salary AS "Salary", departments.name AS "Department" FROM roles LEFT JOIN departments on roles.department_id = departments.id GROUP BY roles.id'
          );
-    }
+    };
 
     // find all departments
     findAllDepartments() {
         return this.connection.promise().query(
             'SELECT id, name FROM departments;'
         );
-    }
+    };
     
     // view dept budgets
     viewDepartmentBudgets() {
         return this.connection.promise().query(
             'SELECT departments.name AS "Department", SUM(roles.salary) AS "Budget Per Dept" FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id GROUP BY departments.name'
         );
-    }
+    };
 
     // generate list of all employees
     employeeQuery() {

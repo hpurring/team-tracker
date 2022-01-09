@@ -13,9 +13,11 @@ function init() {
     const logoText = logo({ name: "Team Tracker"}).render();
 
     console.log(logoText);
-
-    loadMainPrompts();
-}
+    console.log('   by hilary purrington');
+    console.log('');
+    console.log('');
+    loadMainPrompts()
+};
 
 // load main menu
 function loadMainPrompts() {
@@ -178,7 +180,6 @@ async function addEmployee() {
         const lastName = answer.lastName;
         const roleId = await db.roleIdQuery(answer.role);
         const managerId = answer.manager === "None" ? null : await managerIdQuery(answer.manager);
-        console.log(managerId);
         const query = connection.query("INSERT INTO employees SET ?",
             {
                 first_name: firstName,
@@ -313,7 +314,7 @@ async function addRole() {
             message: "To which department does this role belong?"
         }
     ]).then( async answer => {
-        console.log("You've added " + answer.title + " with a salary of " + answer.salary + " to the " + answer.department + ".");
+        console.log("You've added " + answer.title + " with a salary of " + answer.salary + " to the " + answer.department + " team.");
         const title = answer.title;
         const salary = answer.salary;
         const departmentId = await db.departmentIdQuery(answer.department);

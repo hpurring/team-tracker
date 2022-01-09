@@ -1,40 +1,45 @@
-# team-tracker
 
-GIVEN a command-line application that accepts user input
+  
+  # Team Tracker
 
-- WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee 
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
+  By responding to command line prompts using node.js, you can create, update, read, and delete information about your business's employees, roles, and departments.
 
-- WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+  ## Table of Contents
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Credits](#credits)
+  * [License](#license)
+  * [Features](#features)
+  * [Contributing](#contributing)
+  * [Tests](#tests)
+  * [Questions](#questions)
 
-- WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+  ## Installation
+  Install node.js. While in the root directory of the project, enter 'npm start' into terminal, and then answer the following prompts.
 
-- WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
+  ## Usage
+  Use to track your business's employees, roles, departments, salaries, budgets, and reporting structure.
+  
+  [![Readme Generator Demo](develop/team-tracker_screenshot)](https://drive.google.com/file/d/1Ar6bO-24ul6TqX7wM9y1bZF6dBDOUOeI/view?usp=sharing "Team Tracker Demo")
 
-- WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 
-- WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+  ## Credits
+  None.
 
-- WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+  ## License 
+  [MIT](https://choosealicense.com/licenses/mit/)
 
-- Application allows users to update employee managers (2 points).
+  ## Features
+  n/a
 
-- Application allows users to view employees by manager (2 points).
+  ## Contributing
+  Not currently open for contributions.
 
-- Application allows users to view employees by department (2 points).
+  ## Tests
+  n/a
 
-Application allows users to delete 
-- departments, 
-- roles, and 
-- employees (2 points for each).
+  ## Questions
+  Questions? Contact me via [GitHub](https://github.com/hpurring) or [by email](mailto:hilarypurrington@gmail.com).
 
-- Application allows users to view the total utilized budget of a department—in other words, the combined salaries of all employees in that department (8 points).
