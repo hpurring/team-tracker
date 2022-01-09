@@ -1,5 +1,5 @@
 const { prompt } = require("inquirer");
-const { updateEmployeeManager, roleIdQuery, managerIdQuery } = require("./db");
+const { roleIdQuery, managerIdQuery } = require("./db");
 const db = require('./db');
 const logo = require('asciiart-logo');
 const { load } = require("dotenv");
@@ -107,7 +107,7 @@ async function viewEmployeesByManager() {
         prompt([
             {
                 type: 'list',
-                name: 'managers',
+                name: 'manager',
                 message: "Which manager's direct reports would you like to see?",
                 choices: managers
             }
@@ -165,8 +165,8 @@ async function addEmployee() {
         const firstName = answer.firstName;
         const lastName = answer.lastName;
         const roleId = await db.roleIdQuery(answer.role);
-        console.log(roleId);
-        const managerId = answer.manager === "None" ? null : await db.managerIdQuery(answer.manager);
+        const managerId = answer.manager === "None" ? null : await managerIdQuery(answer.manager);
+        console.log(managerId);
         const query = connection.query("INSERT INTO employees SET ?",
             {
                 first_name: firstName,
@@ -175,7 +175,7 @@ async function addEmployee() {
                 manager_id: managerId
             }, (err, res) => {
                 if (err) throw err;
-                console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.roleId + " with " + answer.manager + " as their manager.");
+                console.log("You've added " + answer.firstName + " " + answer.lastName + " as " + answer.role + " with " + answer.manager + " as their manager.");
                 loadMainPrompts();
             });
     });
@@ -206,7 +206,7 @@ async function updateEmployeeRole() {
         console.log(answer.employee + "'s role has been updated to " + answer.role + '.');
         const employeeId = await db.employeeIdQuery(answer.employee);
         const newRoleId = await db.roleIdQuery(answer.role);
-        const query = connection.query('UPDATE employees SET ? WHERE id=?',
+        query = connection.query('UPDATE employees SET ? WHERE id=?',
             [{
                 role_id: newRoleId
             },
@@ -214,12 +214,40 @@ async function updateEmployeeRole() {
                     if (err) throw err;
                     loadMainPrompts();
             });
+            console.log(query.sql);
     });
 };
 
-// function updateEmployeeManager() {
-
-// };
+async function updateEmployeeManager() {
+    var employeeChoices = await db.employeeQuery;
+    var managerChoices = await db.managerQuery;
+    prompt([
+        {
+            type: 'list',
+            name: 'employee',
+            choices: employeeChoices,
+            message: "Which employee would you like to update?"
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            choices: managerChoices,
+            message: "What is the employee's new manager?"
+        }
+    ]).then(async answer => {
+        console.log(answer.employee + "'s manager has been updated to " + answer.manager + '.');
+        const employeeId = await db.employeeIdQuery(answer.employee);
+        const newManagerId = answer.manager === "None" ? null : await managerIdQuery(answer.manager);
+        const query = connection.query('UPDATE employees SET ? WHERE id=?',
+            [{
+                manager_id: newManagerId
+            },
+                employeeId], (err, res) => {
+                    if (err) throw err;
+                    loadMainPrompts();
+            });
+    })
+};
 
 function viewRoles() {
     console.log("Viewing all roles");

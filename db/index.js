@@ -148,11 +148,11 @@ class DB {
         })
     };
 
-    employeeIdQuery() {
+    employeeIdQuery = employee => {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT employees.id FROM employees', (err, res) => {
-                if (err) throw err;
-                return err ? reject(err) : resolve(res[0].id);
+            connection.query("SELECT * FROM employees WHERE CONCAT(first_name, ' ', last_name)=?", [employee], async (err, res) => {
+            if (err) throw err;
+            return err ? reject(err) : resolve(res[0].id);
             });
         });
     };
@@ -206,18 +206,14 @@ class DB {
         });
     }
 
-    managerIdQuery() {
+    managerIdQuery = manager => {
         return new Promise((resolve, reject) => {
-            const managerIdArr = [];
-            connection.query('SELECT employees.id AS id, CONCAT(first_name, " ", last_name) AS "Employee" FROM employees WHERE employees.manager_id=0', (err, res) => {
+            connection.query('SELECT * FROM employees WHERE CONCAT(first_name, " ", last_name)=?', [manager], async (err, res) => {
                 if (err) throw err;
-                res.forEach(manager => {
-                    managerIdArr.push(manager.id);
-                    return err ? reject(err) : resolve(managerIdArr);
-                });
+                return err ? reject(err) : resolve(res[0].id);
+              });
             });
-        });
-    };
+          };
 
     departmentQuery() {
         return new Promise((resolve, reject) => {
