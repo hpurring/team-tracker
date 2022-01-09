@@ -6,9 +6,9 @@ const { load } = require("dotenv");
 require('console.table');
 const connection = require('./db/connection');
 
-
 init();
 
+// launch program
 function init() {
     const logoText = logo({ name: "Team Tracker"}).render();
 
@@ -17,6 +17,7 @@ function init() {
     loadMainPrompts();
 }
 
+// load main menu
 function loadMainPrompts() {
     prompt([{
         type: 'list',
@@ -77,7 +78,6 @@ function loadMainPrompts() {
 };
 
 // view all employees
-
 function viewEmployees() {
     console.log("Viewing employees");
     db.findAllEmployees()
@@ -87,21 +87,32 @@ function viewEmployees() {
             console.table(employee);
         })
         .then(() => loadMainPrompts());
-}
+};
 
-// async function viewEmployeesByDepartment() {
-//     const departmentChoices = await db.departmentQuery;
-//         prompt([
-//             {
-//                 type: 'list',
-//                 name: 'department',
-//                 message: "Which department's employees would you like to see?",
-//                 choices: departmentChoices
-//             }
-//         ])
-    
-// };
 
+// view all employees by department
+async function viewEmployeesByDepartment() {
+    const departmentChoices = await db.departmentQuery;
+        prompt([
+            {
+                type: 'list',
+                name: 'department',
+                message: "Which department's employees would you like to see?",
+                choices: departmentChoices
+            }
+        ])
+        .then(async answer => {
+            const departmentId = await db.departmentIdQuery(answer.department);
+            connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employees', roles.title AS 'Title' FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on departments.id = roles.department_id WHERE departments.id=?", [departmentId], (err, res) => {
+                if (err) throw err;
+                console.table(res);
+                loadMainPrompts();
+            })
+        });
+};
+
+
+// view employees by manager
 async function viewEmployeesByManager() {
     const managers = await db.currentManagerQuery;
         prompt([
@@ -121,7 +132,7 @@ async function viewEmployeesByManager() {
                     loadMainPrompts();
                 })
             } else {
-                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS employees FROM employees WHERE manager_id=?", [managerId], (err, res) => {
+                connection.query("SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employees' FROM employees WHERE manager_id=?", [managerId], (err, res) => {
                     if (err) throw err;
                     if (res.length < 1) {
                         console.log("No employees to show.")
@@ -135,6 +146,7 @@ async function viewEmployeesByManager() {
         });
 }
 
+// add new employee
 async function addEmployee() {
     var roleChoices = await db.roleQuery();
     var managerChoices = await db.managerQuery();
@@ -181,6 +193,7 @@ async function addEmployee() {
     });
 };
 
+// remove employee
 async function removeEmployee() {
     var employeeChoices = await db.employeeQuery;
     prompt([
@@ -201,6 +214,7 @@ async function removeEmployee() {
     });
 };
 
+// update employee role
 async function updateEmployeeRole() {
     var employeeChoices = await db.employeeQuery;
     var roleChoices = await db.roleQuery;
@@ -230,10 +244,11 @@ async function updateEmployeeRole() {
                     if (err) throw err;
                     loadMainPrompts();
             });
-            console.log(query.sql);
+            // console.log(query.sql);
     });
 };
 
+// update an employee's manager
 async function updateEmployeeManager() {
     var employeeChoices = await db.employeeQuery;
     var managerChoices = await db.managerQuery;
@@ -265,6 +280,7 @@ async function updateEmployeeManager() {
     })
 };
 
+// view all roles
 function viewRoles() {
     console.log("Viewing all roles");
     db.findAllRoles()
@@ -276,6 +292,7 @@ function viewRoles() {
         .then(() => loadMainPrompts());
 };
 
+// add new role
 async function addRole() {
     var departmentChoices = await db.departmentQuery();
     prompt([
@@ -312,7 +329,7 @@ async function addRole() {
     });
 };
 
-
+// remove role
 async function removeRole() {
     var roleChoices = await db.roleQuery;
     prompt([
@@ -332,7 +349,7 @@ async function removeRole() {
     });
 };
 
-
+// view all departments
 function viewDepartments() {
     console.log("Viewing all departments");
     db.findAllDepartments()
@@ -345,7 +362,7 @@ function viewDepartments() {
 
 };
 
-// create new dept
+// create new department
 function createDepartment() {
     prompt([
         {
@@ -366,6 +383,7 @@ function createDepartment() {
     });
 };
 
+// remove department
 async function removeDepartment() {
     var departmentChoices = await db.departmentQuery;
     prompt([
@@ -373,7 +391,7 @@ async function removeDepartment() {
             type: 'list',
             name: 'department',
             choices: departmentChoices,
-            message: "Which role would you like to remove?"
+            message: "Which department would you like to remove?"
         }
     ])
     .then(async answer => {
@@ -385,6 +403,7 @@ async function removeDepartment() {
     });
 };
 
+// view departments' budgets
 function viewBudget() {
     console.log("Viewing budget");
     db.viewDepartmentBudgets()
@@ -396,11 +415,7 @@ function viewBudget() {
         .then(() => loadMainPrompts());
 };
 
-// View all employees that belong to a department
-
-// function quit() {
-
-// };
-
-
-
+// Exit application
+function quit() {
+    connection.end();
+};
