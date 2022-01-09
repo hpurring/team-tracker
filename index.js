@@ -181,9 +181,25 @@ async function addEmployee() {
     });
 };
 
-// function removeEmployee() {
-
-// };
+async function removeEmployee() {
+    var employeeChoices = await db.employeeQuery;
+    prompt([
+        {
+            type: 'list',
+            name: 'employee',
+            choices: employeeChoices,
+            message: "Which employee would you like to remove?"
+        }
+    ])
+    .then(async answer => {
+        console.log("You've successfully deleted " + answer.employee + ".");
+        const employeeId = await db.employeeIdQuery(answer.employee)
+        const query = connection.query('DELETE FROM employees WHERE employees.id =?', [employeeId], (err, res) => {
+            if (err) throw err;
+            loadMainPrompts();
+        })
+    });
+};
 
 async function updateEmployeeRole() {
     var employeeChoices = await db.employeeQuery;
@@ -297,9 +313,25 @@ async function addRole() {
 };
 
 
-// function removeRole() {
+async function removeRole() {
+    var roleChoices = await db.roleQuery;
+    prompt([
+        {
+            type: 'list',
+            name: 'role',
+            choices: roleChoices,
+            message: "Which role would you like to remove?"
+        }
+    ])
+    .then(async answer => {
+        console.log("You've successfully deleted " + answer.role + ".");
+        const query = connection.query('DELETE FROM roles WHERE roles.title =?', [answer.role], (err, res) => {
+            if (err) throw err;
+            loadMainPrompts();
+        })
+    });
+};
 
-// };
 
 function viewDepartments() {
     console.log("Viewing all departments");
@@ -334,9 +366,24 @@ function createDepartment() {
     });
 };
 
-// function removeDepartment() {
-
-// };
+async function removeDepartment() {
+    var departmentChoices = await db.departmentQuery;
+    prompt([
+        {
+            type: 'list',
+            name: 'department',
+            choices: departmentChoices,
+            message: "Which role would you like to remove?"
+        }
+    ])
+    .then(async answer => {
+        console.log("You've successfully deleted " + answer.department + ".");
+        const query = connection.query('DELETE FROM departments WHERE departments.name =?', [answer.department], (err, res) => {
+            if (err) throw err;
+            loadMainPrompts();
+        })
+    });
+};
 
 function viewBudget() {
     console.log("Viewing budget");
