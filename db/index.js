@@ -23,7 +23,7 @@ class DB {
     // find all departments
     findAllDepartments() {
         return this.connection.promise().query(
-            'SELECT id, name FROM departments;'
+            'SELECT id AS "ID", name AS "Department Name" FROM departments;'
         );
     };
     
