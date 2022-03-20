@@ -22,7 +22,7 @@
   ## Usage
   Use to track your business's employees, roles, departments, salaries, budgets, and reporting structure.
   
-  [![Readme Generator Demo](develop/team-tracker_screenshot)](https://drive.google.com/file/d/1Ar6bO-24ul6TqX7wM9y1bZF6dBDOUOeI/view?usp=sharing "Team Tracker Demo")
+  [![Readme Generator Demo](https://github.com/hpurring/team-tracker/blob/main/develop/team-tracker_screenshot.png)](https://drive.google.com/file/d/1Ar6bO-24ul6TqX7wM9y1bZF6dBDOUOeI/view?usp=sharing "Team Tracker Demo")
 
 
   ## Credits
